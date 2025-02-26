@@ -294,7 +294,7 @@
 
   <!-- Gallery Container -->
   <div class="gallery-container" id="galleryContainer">
-    <div class="overlay-title" id="overlayTitle">bittersweet memories</div>
+    <div class="overlay-title" id="overlayTitle">bittersweet<br>memories</div position=center>
     <div class="gallery" id="gallery">
       <div class="loading-message" id="loadingMessage">Loading photos...</div>
     </div>
@@ -542,7 +542,6 @@
           const fullRes = document.createElement('img');
           fullRes.dataset.src = imagePath; // Original image path
           fullRes.className = 'full-res';
-          fullRes.alt = `Image ${i + 1} (Full Resolution)`;
           fullRes.loading = 'lazy';
           
           container.appendChild(checkbox);
