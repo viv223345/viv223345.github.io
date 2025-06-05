@@ -1,3 +1,6 @@
 [submodule "spotimood"]
 	path = spotimood
 	url = https://github.com/viv223345/spotimood
+[submodule "emojinator"]
+	path = emojinator
+	url = https://github.com/viv223345/emojinator
