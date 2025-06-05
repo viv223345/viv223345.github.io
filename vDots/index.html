@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vDots - Hyprland Dotfiles</title>
+  <style>
+    :root {
+      --bg-color: #0f0f14;
+      --text-color: #d9e0ee;
+      --accent-color: #7aa2f7;
+      --secondary-accent: #bb9af7;
+      --card-bg: #1a1b26;
+      --code-bg: #24283b;
+    }
+    
+    body.light-theme {
+      --bg-color: #f5f5f7;
+      --text-color: #24283b;
+      --accent-color: #5c6ac4;
+      --secondary-accent: #9b6bde;
+      --card-bg: #ffffff;
+      --code-bg: #eaecf5;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    
+    header {
+      padding: 8rem 2rem 6rem;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(122, 162, 247, 0.15), rgba(187, 154, 247, 0.15));
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s ease;
+    }
+    
+    body.light-theme header {
+      background: linear-gradient(135deg, rgba(92, 106, 196, 0.1), rgba(155, 107, 222, 0.1));
+    }
+    
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.6;
+    }
+    
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--accent-color);
+      box-shadow: 0 0 10px rgba(122, 162, 247, 0.8);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    body.light-theme .particle {
+      box-shadow: 0 0 10px rgba(92, 106, 196, 0.8);
+    }
+    
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+    
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, var(--accent-color), var(--secondary-accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+      transition: background 0.3s ease;
+    }
+    
+    .tagline {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: var(--text-color);
+      opacity: 0.8;
+      transition: color 0.3s ease;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 0.8rem 1.8rem;
+      background: linear-gradient(90deg, var(--accent-color), var(--secondary-accent));
+      color: #fff;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      margin: 0.5rem;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(122, 162, 247, 0.3);
+    }
+    
+    body.light-theme .btn:hover {
+      box-shadow: 0 10px 20px rgba(92, 106, 196, 0.3);
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--accent-color);
+      color: var(--accent-color);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    
+    .section-title {
+      text-align: center;
+      margin-bottom: 3rem;
+      font-size: 2rem;
+      color: var(--accent-color);
+      transition: color 0.3s ease;
+    }
+    
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    
+    .feature-card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 2rem;
+      transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+      border-top: 3px solid var(--accent-color);
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .feature-icon {
+      font-size: 2.5rem;
+      color: var(--accent-color);
+      margin-bottom: 1rem;
+      transition: color 0.3s ease;
+    }
+    
+    .feature-title {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: var(--text-color);
+      transition: color 0.3s ease;
+    }
+    
+    .feature-desc {
+      color: var(--text-color);
+      opacity: 0.7;
+      transition: color 0.3s ease;
+    }
+    
+    .showcase {
+      margin: 4rem 0;
+      text-align: center;
+    }
+    
+    .screenshot {
+      max-width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      margin-bottom: 2rem;
+      border: 1px solid rgba(122, 162, 247, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    
+    body.light-theme .screenshot {
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(92, 106, 196, 0.3);
+    }
+    
+    .screenshot:hover {
+      transform: scale(1.02);
+    }
+    
+    .code-block {
+      background-color: var(--code-bg);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      overflow-x: auto;
+      border-left: 4px solid var(--accent-color);
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    
+    code {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      color: var(--text-color);
+      transition: color 0.3s ease;
+    }
+    
+    .installation {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 3rem;
+      margin: 4rem 0;
+      transition: background-color 0.3s ease;
+    }
+    
+    .step {
+      margin-bottom: 2rem;
+      position: relative;
+      padding-left: 2rem;
+    }
+    
+    .step-number {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 24px;
+      height: 24px;
+      background-color: var(--accent-color);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+    
+    footer {
+      text-align: center;
+      padding: 3rem 0;
+      background-color: var(--card-bg);
+      margin-top: 4rem;
+      transition: background-color 0.3s ease;
+    }
+    
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .social-link {
+      color: var(--text-color);
+      font-size: 1.5rem;
+      transition: color 0.3s ease;
+    }
+    
+    .social-link:hover {
+      color: var(--accent-color);
+    }
+    
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 3rem 0;
+    }
+    
+    .gallery-item {
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .gallery-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .gallery-item:hover .gallery-img {
+      transform: scale(1.05);
+    }
+    
+    .gallery-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 1rem;
+      background: linear-gradient(to top, rgba(15, 15, 20, 0.9), transparent);
+      color: var(--text-color);
+      font-weight: 600;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    
+    body.light-theme .gallery-overlay {
+      background: linear-gradient(to top, rgba(245, 245, 247, 0.9), transparent);
+    }
+    
+    .theme-switch {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: var(--card-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease, background-color 0.3s ease;
+    }
+    
+    body.light-theme .theme-switch {
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .theme-switch:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    body.light-theme .theme-switch:hover {
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    a {
+      color: var(--accent-color);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+      
+      .tagline {
+        font-size: 1rem;
+      }
+      
+      .container {
+        padding: 2rem 1rem;
+      }
+      
+      .feature-card {
+        padding: 1.5rem;
+      }
+      
+      .installation {
+        padding: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="theme-switch">🌙</div>
+  
+  <header>
+    <div class="particles">
+      <div class="particle" style="width: 15px; height: 15px; top: 15%; left: 10%;"></div>
+      <div class="particle" style="width: 10px; height: 10px; top: 25%; left: 20%;"></div>
+      <div class="particle" style="width: 20px; height: 20px; top: 35%; left: 50%;"></div>
+      <div class="particle" style="width: 12px; height: 12px; top: 65%; left: 70%;"></div>
+      <div class="particle" style="width: 8px; height: 8px; top: 75%; left: 85%;"></div>
+      <div class="particle" style="width: 18px; height: 18px; top: 85%; left: 30%;"></div>
+      <div class="particle" style="width: 14px; height: 14px; top: 45%; left: 90%;"></div>
+    </div>
+    <div class="content">
+      <h1>vDots</h1>
+      <p class="tagline">A meticulously crafted Hyprland configuration for modern Linux desktops</p>
+      <div>
+        <a href="https://github.com/viv223345/vDots" class="btn">View on GitHub</a>
+        <a href="#installation" class="btn btn-outline">Installation Guide</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="container">
+    <h2 class="section-title">Features</h2>
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">🚀</div>
+        <h3 class="feature-title">Hyprland Configuration</h3>
+        <p class="feature-desc">Optimized Hyprland setup with smooth animations, gestures, and efficient workspace management for a fluid desktop experience.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <h3 class="feature-title">Aesthetic Theme</h3>
+        <p class="feature-desc">Carefully selected color schemes, fonts, and UI elements for a cohesive and visually stunning desktop environment.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚙️</div>
+        <h3 class="feature-title">Custom Scripts</h3>
+        <p class="feature-desc">Utility scripts for managing system resources, notifications, and everyday workflow enhancements.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="showcase container">
+    <h2 class="section-title">Showcase</h2>
+    <img src="/api/placeholder/800/450" alt="Hyprland Desktop Screenshot" class="screenshot"/>
+    <div class="gallery">
+      <div class="gallery-item">
+        <img src="/api/placeholder/400/200" alt="Terminal with Neofetch" class="gallery-img"/>
+        <div class="gallery-overlay">Terminal Setup</div>
+      </div>
+      <div class="gallery-item">
+        <img src="/api/placeholder/400/200" alt="App Launcher" class="gallery-img"/>
+        <div class="gallery-overlay">Application Launcher</div>
+      </div>
+      <div class="gallery-item">
+        <img src="/api/placeholder/400/200" alt="Workspace View" class="gallery-img"/>
+        <div class="gallery-overlay">Workspace Management</div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="installation" class="container">
+    <h2 class="section-title">Installation</h2>
+    <div class="installation">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Clone the Repository</h3>
+        <div class="code-block">
+          <code>git clone https://github.com/viv223345/vDots.git ~/.config/hypr</code>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>Install Dependencies</h3>
+        <div class="code-block">
+          <code>
+# Arch Linux/Manjaro<br>
+sudo pacman -S hyprland kitty waybar wofi dunst swaylock-effects \
+  swaybg wl-clipboard polkit-gnome network-manager-applet \
+  xdg-desktop-portal-hyprland
+          </code>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Apply Configuration</h3>
+        <div class="code-block">
+          <code>
+# Backup your existing config first (if needed)<br>
+mv ~/.config/hypr ~/.config/hypr.bak<br><br>
+# Link or copy the repository content<br>
+ln -s ~/path/to/vDots ~/.config/hypr<br><br>
+# Make scripts executable<br>
+chmod +x ~/.config/hypr/scripts/*
+          </code>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-number">4</div>
+        <h3>Start Hyprland</h3>
+        <p>Log out of your current session and select Hyprland from your display manager, or start it directly:</p>
+        <div class="code-block">
+          <code>exec Hyprland</code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container">
+    <h2 class="section-title">Configuration Highlights</h2>
+    <div class="code-block">
+      <code>
+# Hyprland key bindings<br>
+$mainMod = SUPER<br><br>
+bind = $mainMod, Q, exec, kitty<br>
+bind = $mainMod, C, killactive, <br>
+bind = $mainMod, M, exit, <br>
+bind = $mainMod, E, exec, dolphin<br>
+bind = $mainMod, V, togglefloating, <br>
+bind = $mainMod, R, exec, wofi --show drun<br>
+bind = $mainMod, P, pseudo, # dwindle<br>
+bind = $mainMod, J, togglesplit, # dwindle
+      </code>
+    </div>
+  </section>
+
+  <section class="container">
+    <h2 class="section-title">Customization</h2>
+    <p style="text-align: center; margin-bottom: 2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+      Make this configuration your own by tweaking the files to match your preferences. The configuration is well-documented and organized for easy modification.
+    </p>
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">🖌️</div>
+        <h3 class="feature-title">Theme Customization</h3>
+        <p class="feature-desc">Modify colors, fonts, and styling in the configuration files to match your aesthetic preferences.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⌨️</div>
+        <h3 class="feature-title">Keybinding Adjustment</h3>
+        <p class="feature-desc">Personalize keyboard shortcuts in the hyprland.conf file to create a workflow that feels natural to you.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔌</div>
+        <h3 class="feature-title">Plugin Integration</h3>
+        <p class="feature-desc">Extend functionality with additional plugins and tools that integrate seamlessly with this configuration.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>vDots - A Hyprland Configuration by <a href="https://github.com/viv223345" style="color: var(--accent-color); text-decoration: none;">viv223345</a></p>
+    <div class="social-links">
+      <a href="https://github.com/viv223345/vDots" class="social-link">GitHub</a>
+    </div>
+    <p style="color: var(--text-color); opacity: 0.6; font-size: 0.9rem; margin-top: 1rem;">Licensed under MIT License</p>
+  </footer>
+
+  <script>
+    // Initialize particles
+    const particles = document.querySelectorAll('.particle');
+    let mouseX = 0;
+    let mouseY = 0;
+    let isMouseMoving = false;
+    let lastMouseMoveTime = 0;
+    
+    // Add floating animation to particles
+    particles.forEach(particle => {
+      // Set initial position
+      const x = parseFloat(particle.style.left);
+      const y = parseFloat(particle.style.top);
+      particle.dataset.baseX = x;
+      particle.dataset.baseY = y;
+      
+      // Randomize animation parameters
+      const duration = 5 + Math.random() * 10;
+      const delay = Math.random() * 5;
+      
+      // Apply animation
+      particle.style.animation = `float ${duration}s infinite ease-in-out ${delay}s`;
+    });
+    
+    // Track mouse position
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      isMouseMoving = true;
+      lastMouseMoveTime = Date.now();
+      
+      // Reset mouse flag after a period of inactivity
+      setTimeout(() => {
+        if (Date.now() - lastMouseMoveTime >= 100) {
+          isMouseMoving = false;
+        }
+      }, 100);
+    });
+    
+    // Mouse attraction effect
+    function animateParticles() {
+      if (isMouseMoving) {
+        particles.forEach(particle => {
+          const particleRect = particle.getBoundingClientRect();
+          const particleCenterX = particleRect.left + particleRect.width / 2;
+          const particleCenterY = particleRect.top + particleRect.height / 2;
+          
+          // Calculate distance from mouse
+          const dx = mouseX - particleCenterX;
+          const dy = mouseY - particleCenterY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          // Calculate attraction strength (decrease with distance)
+          const maxDistance = 300;
+          const maxAttraction = 40;
+          let attraction = 0;
+          
+          if (distance < maxDistance) {
+            // Inverse square law for attraction
+            attraction = maxAttraction * (1 - Math.pow(distance / maxDistance, 2));
+          }
+          
+          // Calculate new position with slight attraction toward mouse
+          const baseX = parseFloat(particle.dataset.baseX);
+          const baseY = parseFloat(particle.dataset.baseY);
+          const headerRect = document.querySelector('header').getBoundingClientRect();
+          
+          // Normalize dx and dy
+          const normalizedDx = dx / distance || 0;
+          const normalizedDy = dy / distance || 0;
+          
+          // Apply attraction
+          const newX = baseX + normalizedDx * attraction * 0.1;
+          const newY = baseY + normalizedDy * attraction * 0.1;
+          
+          // Apply new position within bounds
+          particle.style.left = `${Math.max(0, Math.min(100, newX))}%`;
+          particle.style.top = `${Math.max(0, Math.min(100, newY))}%`;
+        });
+      } else {
+        // Return particles to base position when mouse is not moving
+        particles.forEach(particle => {
+          const baseX = parseFloat(particle.dataset.baseX);
+          const baseY = parseFloat(particle.dataset.baseY);
+          
+          // Smoothly return to base position
+          const currentX = parseFloat(particle.style.left);
+          const currentY = parseFloat(particle.style.top);
+          
+          const newX = currentX + (baseX - currentX) * 0.02;
+          const newY = currentY + (baseY - currentY) * 0.02;
+          
+          particle.style.left = `${newX}%`;
+          particle.style.top = `${newY}%`;
+        });
+      }
+      
+      requestAnimationFrame(animateParticles);
+    }
+    
+    animateParticles();
+    
+    // Theme switch functionality
+    const themeSwitch = document.querySelector('.theme-switch');
+    themeSwitch.addEventListener('click', () => {
+      document.body.classList.toggle('light-theme');
+      themeSwitch.textContent = document.body.classList.contains('light-theme') ? '☀️' : '🌙';
+      
+      // Update particle colors for theme
+      particles.forEach(particle => {
+        particle.style.background = getComputedStyle(document.body).getPropertyValue('--accent-color');
+      });
+    });
+    
+    // Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
+</body>
+</html>

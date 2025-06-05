@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bittersweet</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Times New Roman', Times, serif;
+      background-color: #000;
+      overflow: hidden;
+    }
+    
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .login-container {
+      background-color: #111;
+      padding: 40px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      transform: scale(0.8);
+      opacity: 0;
+      animation: loginAppear 0.5s forwards;
+    }
+    
+    @keyframes loginAppear {
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    
+    .login-title {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      text-transform: lowercase;
+      color: white;
+    }
+    
+    .login-input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #333;
+      border-radius: 4px;
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 1.2rem;
+      background-color: #222;
+      color: white;
+    }
+    
+    .login-button {
+      background-color: #333;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 4px;
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .login-button:hover {
+      background-color: #555;
+    }
+    
+    .gallery-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: none;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    
+    .gallery-container.visible {
+      opacity: 1;
+    }
+    
+    .overlay-title {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Times New Roman', Times, serif;
+      font-weight: normal;
+      font-size: 4rem;
+      color: white;
+      text-transform: lowercase;
+      letter-spacing: 2px;
+      z-index: 10;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      grid-template-rows: repeat(1, 1fr);
+      gap: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .image-container {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      transform: scale(0.95);
+      opacity: 0;
+      animation: imageFadeIn 0.5s forwards;
+    }
+    
+    @keyframes imageFadeIn {
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    
+    .image-container img.thumbnail {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    
+    .image-container img.full-res {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      z-index: 1;
+    }
+    
+    /* For mouse devices */
+    @media (hover: hover) {
+      .image-container:hover img.thumbnail {
+        transform: scale(1.05);
+      }
+      
+      .image-container:hover img.full-res {
+        opacity: 1;
+      }
+      
+      .image-container:hover ~ .overlay-title {
+        opacity: 0;
+      }
+    }
+    
+    /* For touch devices */
+    .image-container input {
+      display: none;
+    }
+    
+    .image-container label {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      z-index: 2;
+    }
+    
+    @media (hover: none) {
+      .image-container input:checked ~ img.thumbnail {
+        transform: scale(1.05);
+      }
+      
+      .image-container input:checked ~ img.full-res {
+        opacity: 1;
+      }
+      
+      body.image-active .overlay-title {
+        opacity: 0;
+      }
+    }
+    
+    .back-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 20;
+      font-family: 'Times New Roman', Times, serif;
+      display: none;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    
+    .back-button.visible {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .loading-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 1.5rem;
+      font-family: 'Times New Roman', Times, serif;
+      z-index: 5;
+    }
+    
+    .error-message {
+      color: #ff6b6b;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      font-family: 'Times New Roman', Times, serif;
+      display: none;
+    }
+    
+    .login-exit {
+      animation: loginExit 0.8s forwards;
+    }
+    
+    @keyframes loginExit {
+      from {
+        transform: scale(1);
+        opacity: 1;
+      }
+      to {
+        transform: scale(1.5);
+        opacity: 0;
+      }
+    }
+    
+    /* Debug console for development */
+    .debug-console {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      width: 300px;
+      max-height: 150px;
+      overflow-y: auto;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: #00ff00;
+      font-family: monospace;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      z-index: 1000;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Overlay -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-container" id="loginContainer">
+      <h1 class="login-title">bittersweet</h1>
+      <input type="text" class="login-input" id="usernameInput" placeholder="Username" autocomplete="off">
+      <input type="password" class="login-input" id="passwordInput" placeholder="Password">
+      <div class="error-message" id="errorMessage">Invalid credentials. Please try again.</div>
+      <button class="login-button" id="loginButton">Enter</button>
+    </div>
+  </div>
+
+  <!-- Gallery Container -->
+  <div class="gallery-container" id="galleryContainer">
+    <div class="overlay-title" id="overlayTitle">bittersweet<br>memories</div>
+    <div class="gallery" id="gallery">
+      <div class="loading-message" id="loadingMessage">Loading photos...</div>
+    </div>
+    <button class="back-button" id="backButton">Back to Gallery</button>
+  </div>
+  
+  <!-- Debug console (can be toggled for troubleshooting) -->
+  <div class="debug-console" id="debugConsole"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Elements
+      const loginOverlay = document.getElementById('loginOverlay');
+      const loginContainer = document.getElementById('loginContainer');
+      const usernameInput = document.getElementById('usernameInput');
+      const passwordInput = document.getElementById('passwordInput');
+      const loginButton = document.getElementById('loginButton');
+      const errorMessage = document.getElementById('errorMessage');
+      const galleryContainer = document.getElementById('galleryContainer');
+      const gallery = document.getElementById('gallery');
+      const overlayTitle = document.getElementById('overlayTitle');
+      const backButton = document.getElementById('backButton');
+      const loadingMessage = document.getElementById('loadingMessage');
+      const debugConsole = document.getElementById('debugConsole');
+      
+      // Enable debug mode for troubleshooting
+      const DEBUG_MODE = false;
+      
+      if (DEBUG_MODE) {
+        debugConsole.style.display = 'block';
+      }
+      
+      function debugLog(message) {
+        if (!DEBUG_MODE) return;
+        
+        const logEntry = document.createElement('div');
+        logEntry.textContent = message;
+        debugConsole.appendChild(logEntry);
+        debugConsole.scrollTop = debugConsole.scrollHeight;
+        console.log(message);
+      }
+      
+      // Focus the username input when page loads
+      usernameInput.focus();
+      
+      // Acceptable image extensions
+      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+      
+      // Handle login button click
+      loginButton.addEventListener('click', handleLogin);
+      
+      // Also handle Enter key press
+      passwordInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          handleLogin();
+        }
+      });
+      
+      usernameInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          passwordInput.focus();
+        }
+      });
+      
+      // Mock authenticateUser function for demo (since client-side JS can't read files)
+      // In production, this would be a server-side check
+      async function authenticateUser(username, password) {
+        try {
+          // For this example, we'll assume the credentials.txt file is available via fetch
+          // (Note: In a real app, this would be a server-side check)
+          
+          // First try to fetch the credentials file
+          try {
+            const response = await fetch('credentials.txt');
+            
+            if (response.ok) {
+              const credentialsText = await response.text();
+              const credentials = parseCredentials(credentialsText);
+              
+              debugLog(`Credentials loaded from file: ${JSON.stringify(credentials)}`);
+              
+              // Check if credentials match
+              return credentials.some(cred => 
+                cred.username === username && cred.password === password);
+            }
+          } catch (e) {
+            debugLog(`Error fetching credentials file: ${e.message}`);
+          }
+          
+          // Fallback for demo purposes: hardcoded credentials
+          // In production, remove this and only use server-side validation
+          const hardcodedCredentials = [
+            { username: 'john', password: 'doe' }
+          ];
+          
+          debugLog(`Using fallback credentials for demo purposes`);
+          
+          return hardcodedCredentials.some(cred => 
+            cred.username === username && cred.password === password);
+          
+        } catch (error) {
+          debugLog(`Authentication error: ${error.message}`);
+          return false;
+        }
+      }
+      
+      // Parse credentials from text file
+      function parseCredentials(text) {
+        const lines = text.split('\n');
+        const credentials = [];
+        
+        for (const line of lines) {
+          const parts = line.trim().split(':');
+          if (parts.length === 2) {
+            credentials.push({
+              username: parts[0].trim(),
+              password: parts[1].trim()
+            });
+          }
+        }
+        
+        return credentials;
+      }
+      
+      async function handleLogin() {
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+        
+        if (username === '' || password === '') {
+          errorMessage.textContent = 'Please enter both username and password.';
+          errorMessage.style.display = 'block';
+          return;
+        }
+        
+        // Authenticate user
+        debugLog(`Attempting login for username: ${username}`);
+        const isAuthenticated = await authenticateUser(username, password);
+        
+        if (!isAuthenticated) {
+          errorMessage.textContent = 'Invalid credentials. Please try again.';
+          errorMessage.style.display = 'block';
+          
+          // Shake animation for error
+          loginContainer.classList.add('shake');
+          setTimeout(() => {
+            loginContainer.classList.remove('shake');
+          }, 500);
+          return;
+        }
+        
+        debugLog(`Authentication successful for user: ${username}`);
+        
+        // If authentication successful, load images
+        const success = await loadImagesForUser(username);
+        debugLog(`Image loading ${success ? 'successful' : 'failed'}`);
+        
+        if (success) {
+          // Add exit animation class
+          loginContainer.classList.add('login-exit');
+          
+          // After animation completes, hide login and show gallery
+          setTimeout(() => {
+            loginOverlay.style.display = 'none';
+            galleryContainer.style.display = 'block';
+            // Trigger a reflow to ensure the transition works
+            void galleryContainer.offsetWidth;
+            galleryContainer.classList.add('visible');
+          }, 800); // Match animation duration
+        } else {
+          errorMessage.textContent = 'No photos found. Please contact the administrator.';
+          errorMessage.style.display = 'block';
+        }
+      }
+      
+      // Calculate the optimal grid layout based on image count
+      function calculateGrid(count) {
+        const aspectRatio = window.innerWidth / window.innerHeight;
+        let cols, rows;
+        
+        if (count <= 1) {
+          cols = rows = 1;
+        } else if (count <= 2) {
+          cols = 2; rows = 1;
+        } else if (count <= 4) {
+          cols = 2; rows = 2;
+        } else if (count <= 6) {
+          if (aspectRatio > 1) { // Landscape
+            cols = 3; rows = 2;
+          } else { // Portrait
+            cols = 2; rows = 3;
+          }
+        } else if (count <= 9) {
+          cols = 3; rows = 3;
+        } else if (count <= 12) {
+          cols = 4; rows = 3;
+        } else if (count <= 16) {
+          cols = 4; rows = 4;
+        } else {
+          cols = 5; rows = Math.ceil(count / 5);
+        }
+        
+        return { cols, rows };
+      }
+      
+      // Function to set up the gallery grid with the images
+      function setupGallery(images) {
+        debugLog(`Setting up gallery with ${images.length} images`);
+        
+        const imageCount = images.length;
+        const { cols, rows } = calculateGrid(imageCount);
+        
+        // Set the grid layout
+        gallery.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        gallery.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+        
+        // Clear any existing content
+        gallery.innerHTML = '';
+        
+        // Create image containers with staggered animation
+        for (let i = 0; i < imageCount; i++) {
+          const imagePath = images[i];
+          const container = document.createElement('div');
+          container.className = 'image-container';
+          container.id = `container-${i}`;
+          
+          // Add staggered animation delay
+          container.style.animationDelay = `${i * 0.1}s`;
+          
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.id = `img-${i}`;
+          checkbox.className = 'image-toggle';
+          
+          const label = document.createElement('label');
+          label.htmlFor = `img-${i}`;
+          
+          // Thumbnail image (low resolution via sizing attribute)
+          const thumbnail = document.createElement('img');
+          thumbnail.src = imagePath; // Use original path for now
+          thumbnail.className = 'thumbnail';
+          thumbnail.alt = `Image ${i + 1}`;
+          thumbnail.loading = 'lazy';
+          
+          // Full resolution image (loaded on demand)
+          const fullRes = document.createElement('img');
+          fullRes.dataset.src = imagePath; // Original image path
+          fullRes.className = 'full-res';
+          fullRes.loading = 'lazy';
+          
+          container.appendChild(checkbox);
+          container.appendChild(label);
+          container.appendChild(thumbnail);
+          container.appendChild(fullRes);
+          
+          gallery.appendChild(container);
+          
+          // Handle click/touch events
+          checkbox.addEventListener('change', function() {
+            if (this.checked) {
+              // Set body class for mobile overlay handling
+              document.body.classList.add('image-active');
+              
+              // Show/hide overlay title
+              overlayTitle.style.opacity = '0';
+              
+              // Show/hide back button
+              backButton.classList.add('visible');
+              
+              // Load the full-res image if not loaded yet
+              if (!fullRes.src) {
+                fullRes.src = fullRes.dataset.src;
+              }
+              
+              // Uncheck all other checkboxes
+              document.querySelectorAll('.image-toggle').forEach(cb => {
+                if (cb.id !== this.id) {
+                  cb.checked = false;
+                }
+              });
+            } else {
+              document.body.classList.remove('image-active');
+              overlayTitle.style.opacity = '1';
+              backButton.classList.remove('visible');
+            }
+          });
+        }
+      }
+      
+      // FIXED: Function to load images for a specific user with improved image detection
+      async function loadImagesForUser(username) {
+        // Normalize username - lowercase and trim
+        const normalizedUsername = username.toLowerCase().trim();
+        loadingMessage.textContent = `Loading photos for ${username}...`;
+        debugLog(`Loading images for user: ${username}`);
+        
+        try {
+          // Specific path for this example
+          const userFolder = `photos/${normalizedUsername}/`;
+          debugLog(`Looking for images in folder: ${userFolder}`);
+          
+          // For demo purposes, we'll include some hardcoded sample images
+          // These will be used if no server-side images are found
+          const demoMode = true; // Set to false in production
+          
+          // ================ METHOD 1: Try direct fetch for each possible image ================
+          const allImages = [];
+          
+          // Common patterns to try (customize based on your naming convention)
+          const patterns = [];
+          
+          // Generate pattern variations (1.jpg, 2.jpg, photo1.jpg, etc.)
+          for (let i = 1; i <= 20; i++) {
+            for (const ext of imageExtensions) {
+              patterns.push(`${userFolder}${i}${ext}`);
+              patterns.push(`${userFolder}image${i}${ext}`);
+              patterns.push(`${userFolder}photo${i}${ext}`);
+              patterns.push(`${userFolder}img${i}${ext}`);
+            }
+          }
+          
+          // Try all patterns
+          let foundImages = false;
+          debugLog(`Trying ${patterns.length} patterns to find images`);
+          
+          for (const pattern of patterns) {
+            try {
+              const response = await fetch(pattern, { method: 'HEAD' });
+              if (response.ok) {
+                debugLog(`Found image: ${pattern}`);
+                allImages.push(pattern);
+                foundImages = true;
+              }
+            } catch (e) {
+              // Ignore failed fetch attempts (files that don't exist)
+            }
+          }
+          
+          // ================ METHOD 2: Check if we can access any demo images ================
+          if (!foundImages && demoMode) {
+            debugLog(`No images found with direct path check, trying demo images`);
+            
+            // If no images found using patterns, use demo images for testing
+            const demoImages = [
+              'photos/john/1.jpg',
+              'photos/john/2.jpg',
+              'photos/john/3.jpg',
+              'photos/john/4.jpg',
+              'photos/john/5.jpg',
+              'photos/john/6.jpg',
+              'photos/john/7.jpg',
+              'photos/john/8.jpg',
+              'photos/john/9'
+            ];
+            
+            // Check each demo image
+            for (const img of demoImages) {
+              try {
+                const response = await fetch(img, { method: 'HEAD' });
+                if (response.ok) {
+                  debugLog(`Found demo image: ${img}`);
+                  allImages.push(img);
+                  foundImages = true;
+                }
+              } catch (e) {
+                // Ignore failed fetch attempts
+              }
+            }
+          }
+          
+          // ================ FALLBACK: File input if no images found ================ 
+          if (allImages.length === 0) {
+            debugLog(`No images found in user folder using any method`);
+            
+            if (demoMode) {
+              debugLog(`Demo mode enabled, providing placeholder images`);
+              // In demo mode, create mock images
+              const mockImages = [
+                'https://via.placeholder.com/800x600?text=Photo+1',
+                'https://via.placeholder.com/800x600?text=Photo+2',
+                'https://via.placeholder.com/800x600?text=Photo+3',
+                'https://via.placeholder.com/800x600?text=Photo+4'
+              ];
+              
+              setupGallery(mockImages);
+              return true;
+            } else {
+              // If not in demo mode, let the user select files manually
+              debugLog(`Setting up file input for manual selection`);
+              loadingMessage.textContent = 'No photos found. Please select photos manually.';
+              setupFileInput();
+              return false;
+            }
+          }
+          
+          // If we found images, set up the gallery
+          if (allImages.length > 0) {
+            debugLog(`Found ${allImages.length} images, setting up gallery`);
+            setupGallery(allImages);
+            return true;
+          }
+          
+          return false;
+          
+        } catch (error) {
+          debugLog(`Error loading images: ${error.message}`);
+          console.error('Error loading images:', error);
+          loadingMessage.textContent = 'Error loading images. Please try again.';
+          return false;
+        }
+      }
+      
+      // Alternative approach - Let user select files
+      function setupFileInput() {
+        debugLog(`Setting up file input for manual image selection`);
+        
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.multiple = true;
+        fileInput.accept = 'image/*';
+        fileInput.style.display = 'none';
+        document.body.appendChild(fileInput);
+        
+        const selectButton = document.createElement('button');
+        selectButton.textContent = 'Select Photos';
+        selectButton.className = 'login-button';
+        selectButton.style.position = 'fixed';
+        selectButton.style.bottom = '20px';
+        selectButton.style.left = '50%';
+        selectButton.style.transform = 'translateX(-50%)';
+        selectButton.style.zIndex = '100';
+        document.body.appendChild(selectButton);
+        
+        selectButton.addEventListener('click', () => {
+          fileInput.click();
+        });
+        
+        fileInput.addEventListener('change', () => {
+          const files = Array.from(fileInput.files).filter(file => {
+            const extension = '.' + file.name.split('.').pop().toLowerCase();
+            return imageExtensions.includes(extension);
+          });
+          
+          if (files.length > 0) {
+            debugLog(`User selected ${files.length} images`);
+            const imagePaths = files.map(file => URL.createObjectURL(file));
+            setupGallery(imagePaths);
+            selectButton.style.display = 'none';
+            loadingMessage.style.display = 'none';
+            return true;
+          }
+          return false;
+        });
+      }
+      
+      // Reset the gallery view
+      backButton.addEventListener('click', function() {
+        document.querySelectorAll('.image-toggle').forEach(cb => {
+          cb.checked = false;
+        });
+        document.body.classList.remove('image-active');
+        overlayTitle.style.opacity = '1';
+        this.classList.remove('visible');
+      });
+      
+      // Handle window resize
+      window.addEventListener('resize', function() {
+        // Get current images
+        const images = Array.from(document.querySelectorAll('.image-container img.thumbnail')).map(img => img.src);
+        // Only rebuild if we have images
+        if (images.length > 0) {
+          setupGallery(images);
+        }
+      });
+      
+      // Add a simple shake animation for invalid login
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+          20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .shake {
+          animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+      `;
+      document.head.appendChild(style);
+    });
+  </script>
+</body>
+</html>

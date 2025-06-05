@@ -1,0 +1,3 @@
+[submodule "spotimood"]
+	path = spotimood
+	url = https://github.com/viv223345/spotimood
