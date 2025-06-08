@@ -1,221 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chronos</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chronos</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0f0f23;
-            color: #ffffff;
-            min-height: 100vh;
-            line-height: 1.6;
-        }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f0f23;
+      color: #ffffff;
+      min-height: 100vh;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
 
-        header {
-            padding: 3rem 0;
-            text-align: center;
-        }
+    nav {
+      display: flex;
+      justify-content: flex-end;
+      gap: 2rem;
+      padding: 2rem;
+    }
 
-        .logo {
-            font-size: 2.5rem;
-            font-weight: 300;
-            color: #64ffda;
-            margin-bottom: 0.5rem;
-            letter-spacing: 0.1em;
-        }
+    nav a {
+      color: #8892b0;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+    }
 
-        .tagline {
-            color: #8892b0;
-            font-size: 1rem;
-            font-weight: 400;
-        }
+    nav a:hover {
+      color: #64ffda;
+    }
 
-        main {
-            padding: 4rem 0;
-        }
+    header {
+      text-align: center;
+      padding-top: 3rem;
+    }
 
-        .hero {
-            text-align: center;
-            margin-bottom: 6rem;
-        }
+    .logo {
+      font-size: 3rem;
+      font-weight: 300;
+      color: #64ffda;
+      letter-spacing: 0.1em;
+    }
 
-        .hero-title {
-            font-size: 3rem;
-            font-weight: 400;
-            margin-bottom: 1.5rem;
-            color: #ccd6f6;
-        }
+    .tagline {
+      color: #8892b0;
+      font-size: 1.1rem;
+      margin-top: 0.5rem;
+    }
 
-        .hero-subtitle {
-            font-size: 1.1rem;
-            color: #8892b0;
-            max-width: 600px;
-            margin: 0 auto 3rem;
-        }
+    .hero {
+      text-align: center;
+      margin: 5rem 0 6rem;
+    }
 
-        .cta-button {
-            display: inline-block;
-            padding: 0.8rem 2rem;
-            background: transparent;
-            border: 1px solid #64ffda;
-            color: #64ffda;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
+    .hero-title {
+      font-size: 3rem;
+      color: #ccd6f6;
+      font-weight: 400;
+      margin-bottom: 1.2rem;
+    }
 
-        .cta-button:hover {
-            background: rgba(100, 255, 218, 0.1);
-            transform: translateY(-2px);
-        }
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: #8892b0;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+    }
 
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 4rem;
-        }
+    .cta-button {
+      display: inline-block;
+      padding: 0.8rem 2rem;
+      border: 1px solid #64ffda;
+      color: #64ffda;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
 
-        .feature-card {
-            padding: 2rem;
-            border: 1px solid #233554;
-            border-radius: 8px;
-            background: rgba(15, 15, 35, 0.5);
-            transition: all 0.3s ease;
-        }
+    .cta-button:hover {
+      background: rgba(100, 255, 218, 0.1);
+      transform: translateY(-2px);
+    }
 
-        .feature-card:hover {
-            border-color: #64ffda;
-            transform: translateY(-4px);
-        }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+    }
 
-        .feature-title {
-            font-size: 1.2rem;
-            color: #ccd6f6;
-            margin-bottom: 1rem;
-            font-weight: 500;
-        }
+    .feature-card {
+      padding: 2rem;
+      border: 1px solid #233554;
+      border-radius: 8px;
+      background: rgba(15, 15, 35, 0.5);
+      transition: all 0.3s ease;
+    }
 
-        .feature-desc {
-            color: #8892b0;
-            font-size: 0.95rem;
-        }
+    .feature-card:hover {
+      border-color: #64ffda;
+      transform: translateY(-4px);
+    }
 
-        .status {
-            display: inline-block;
-            padding: 0.2rem 0.8rem;
-            background: #1e2749;
-            color: #64ffda;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            margin-bottom: 1rem;
-            font-weight: 500;
-        }
+    .feature-title {
+      font-size: 1.3rem;
+      color: #ccd6f6;
+      margin-bottom: 0.5rem;
+    }
 
-        nav {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-        }
+    .feature-desc {
+      font-size: 0.95rem;
+      color: #8892b0;
+    }
 
-        nav a {
-            color: #8892b0;
-            text-decoration: none;
-            margin-left: 2rem;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
+    .status {
+      display: inline-block;
+      padding: 0.2rem 0.8rem;
+      background: #1e2749;
+      color: #64ffda;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
 
-        nav a:hover {
-            color: #64ffda;
-        }
+    footer {
+      text-align: center;
+      padding: 3rem 0;
+      font-size: 0.85rem;
+      color: #8892b0;
+    }
 
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.2rem;
-            }
-            
-            .container {
-                padding: 0 1rem;
-            }
-            
-            nav {
-                position: relative;
-                top: 0;
-                right: 0;
-                text-align: center;
-                margin-bottom: 2rem;
-            }
-            
-            nav a {
-                margin: 0 1rem;
-            }
-        }
-    </style>
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2.2rem;
+      }
+
+      nav {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .container {
+        padding: 0 1rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    <nav>
-        <a href="https://viv223345.github.io/Chronos">Home</a>
-        <a href="https://viv223345.github.io/Chronos/pomodoro.html">Pomodoro</a>
-        <a href="https://viv223345.github.io/Chronos/tasks.html">Todo</a>
-    </nav>
-    
-    <div class="container">
-        <header>
-            <div class="logo">Chronos</div>
-        </header>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="pomodoro.html">Pomodoro</a>
+    <a href="tasks.html">Todo</a>
+    <a href="habits.html">Habits</a>
+  </nav>
 
-        <main>
-            <div class="hero">
-                <h1 class="hero-title">Manage Time Effectively</h1>
-                <p class="hero-subtitle">
-                    Simple tools for productivity. Focus on what matters with clean, 
-                    distraction-free time management.
-                </p>
-                <a href="https://viv223345.github.io/Chronos/tasks.html" class="cta-button">Get Started</a>
-            </div>
+  <div class="container">
+    <header>
+      <div class="logo">Chronos</div>
+      <p class="tagline">Productivity, mastered.</p>
+    </header>
 
-            <div class="features">
-                <div class="feature-card">
-                    <h3 class="feature-title">Pomodoro Timer</h3>
-                    <p class="feature-desc">
-                        Focus sessions with customizable intervals and break reminders.
-                    </p>
-                </div>
-                
-                <div class="feature-card">
-                   <h3 class="feature-title">
-                      <a href="https://viv223345.github.io/chronos/tasks.html" style="text-decoration: none; color: inherit;">Task Management</a>
-                    </h3>
-                    <p class="feature-desc">
-                        Organize tasks with priorities, deadlines, and progress tracking.
-                    </p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="status">Coming Soon</div>
-                    <h3 class="feature-title">Time Tracking</h3>
-                    <p class="feature-desc">
-                        Monitor how you spend time with detailed analytics and insights.
-                    </p>
-                </div>
-            </div>
-        </main>
+    <div class="hero">
+      <h1 class="hero-title">Time is Your Superpower</h1>
+      <p class="hero-subtitle">
+        Chronos helps you take full control of your day—track habits, plan tasks, focus with timers, and analyze your time.
+      </p>
+      <a href="tasks.html" class="cta-button">Start Organizing</a>
     </div>
+
+    <div class="features">
+      <div class="feature-card">
+        <h3 class="feature-title">
+          <a href="pomodoro.html" style="text-decoration: none; color: inherit;">Pomodoro Timer</a>
+        </h3>
+        <p class="feature-desc">Focus sessions with customizable intervals and smart breaks.</p>
+      </div>
+
+      <div class="feature-card">
+        <h3 class="feature-title">
+          <a href="tasks.html" style="text-decoration: none; color: inherit;">Task Manager</a>
+        </h3>
+        <p class="feature-desc">Organize tasks with priorities, due dates, and progress tracking.</p>
+      </div>
+
+      <div class="feature-card">
+        <h3 class="feature-title">
+          <a href="habits.html" style="text-decoration: none; color: inherit;">Habit Tracker</a>
+        </h3>
+        <p class="feature-desc">Build routines and visualize consistency across your week.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="status">Coming Soon</div>
+        <h3 class="feature-title">Time Analytics</h3>
+        <p class="feature-desc">Understand your time patterns with graphs and reports.</p>
+      </div>
+    </div>
+
+    <footer>
+      &copy; 2025 Chronos by viv223345. All rights reserved.
+    </footer>
+  </div>
 </body>
 </html>
