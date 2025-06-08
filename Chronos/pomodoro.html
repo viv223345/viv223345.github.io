@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronos - Pomodoro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0f0f23;
+            color: #ffffff;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        header {
+            padding: 2rem 0;
+            text-align: center;
+            border-bottom: 1px solid #233554;
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: #64ffda;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.1em;
+        }
+
+        .page-title {
+            color: #8892b0;
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        nav {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+        }
+
+        nav a {
+            color: #8892b0;
+            text-decoration: none;
+            margin-left: 2rem;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover, nav a.active {
+            color: #64ffda;
+        }
+
+        .pomodoro-container {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .timer-display {
+            font-size: 4rem;
+            font-weight: 300;
+            color: #64ffda;
+            margin: 2rem 0;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.1em;
+        }
+
+        .session-info {
+            font-size: 1.2rem;
+            color: #ccd6f6;
+            margin-bottom: 1rem;
+        }
+
+        .session-type {
+            color: #64ffda;
+            font-weight: 500;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 0.8rem 1.5rem;
+            background: transparent;
+            border: 1px solid #64ffda;
+            color: #64ffda;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .control-btn:hover {
+            background: rgba(100, 255, 218, 0.1);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .control-btn.primary {
+            background: #64ffda;
+            color: #0f0f23;
+        }
+
+        .control-btn.primary:hover {
+            background: rgba(100, 255, 218, 0.9);
+        }
+
+        .settings {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .setting-label {
+            color: #8892b0;
+            font-size: 0.85rem;
+        }
+
+        .setting-input {
+            width: 80px;
+            padding: 0.5rem;
+            background: rgba(15, 15, 35, 0.8);
+            border: 1px solid #233554;
+            border-radius: 4px;
+            color: #ccd6f6;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .setting-input:focus {
+            outline: none;
+            border-color: #64ffda;
+        }
+
+        .progress-ring {
+            width: 200px;
+            height: 200px;
+            margin: 1rem auto;
+            position: relative;
+        }
+
+        .progress-ring svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-bg {
+            fill: none;
+            stroke: #233554;
+            stroke-width: 4;
+        }
+
+        .progress-ring-fill {
+            fill: none;
+            stroke: #64ffda;
+            stroke-width: 4;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 2rem 0;
+            border-top: 1px solid #233554;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            color: #64ffda;
+            font-weight: 500;
+        }
+
+        .stat-label {
+            color: #8892b0;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(100, 255, 218, 0.1);
+            border: 1px solid #64ffda;
+            color: #64ffda;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            nav {
+                position: relative;
+                top: 0;
+                right: 0;
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+            
+            nav a {
+                margin: 0 1rem;
+            }
+            
+            .timer-display {
+                font-size: 2.5rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .settings {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .progress-ring {
+                width: 150px;
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a>
+        <a href="https://viv223345.github.io/Chronos/pomodoro.html" class="active">Pomodoro</a>
+        <a href="https://viv223345.github.io/Chronos/tasks.html">Todo</a>
+    </nav>
+    
+    <div class="container">
+        <header>
+            <div class="logo">CHRONOS</div>
+            <div class="page-title">Focus Timer</div>
+        </header>
+
+        <main>
+            <div class="pomodoro-container">
+                <div class="session-info">
+                    <span class="session-type" id="sessionType">Work Session</span>
+                </div>
+
+                <div class="progress-ring">
+                    <svg>
+                        <circle class="progress-ring-bg" cx="100" cy="100" r="90"></circle>
+                        <circle class="progress-ring-fill" cx="100" cy="100" r="90" 
+                                stroke-dasharray="565.48" stroke-dashoffset="565.48" id="progressCircle"></circle>
+                    </svg>
+                </div>
+
+                <div class="timer-display" id="timerDisplay">25:00</div>
+
+                <div class="controls">
+                    <button class="control-btn primary" id="startBtn">Start</button>
+                    <button class="control-btn" id="pauseBtn" disabled>Pause</button>
+                    <button class="control-btn" id="resetBtn">Reset</button>
+                    <button class="control-btn" id="skipBtn">Skip</button>
+                </div>
+
+                <div class="settings">
+                    <div class="setting-group">
+                        <label class="setting-label">Work (min)</label>
+                        <input type="number" class="setting-input" id="workDuration" value="25" min="1" max="60">
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">Short Break (min)</label>
+                        <input type="number" class="setting-input" id="shortBreakDuration" value="5" min="1" max="15">
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">Long Break (min)</label>
+                        <input type="number" class="setting-input" id="longBreakDuration" value="15" min="10" max="30">
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number" id="completedSessions">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalFocusTime">0h 0m</div>
+                        <div class="stat-label">Focus Time</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="currentStreak">0</div>
+                        <div class="stat-label">Streak</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        class PomodoroTimer {
+            constructor() {
+                this.isRunning = false;
+                this.currentSession = 'work'; // 'work', 'shortBreak', 'longBreak'
+                this.sessionCount = 0;
+                this.completedSessions = 0;
+                this.totalFocusTime = 0; // in minutes
+                this.currentStreak = 0;
+                
+                this.timeLeft = 0;
+                this.totalTime = 0;
+                this.timer = null;
+
+                this.workDuration = 25;
+                this.shortBreakDuration = 5;
+                this.longBreakDuration = 15;
+
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.updateSettings();
+                this.resetTimer();
+                this.updateStats();
+            }
+
+            bindEvents() {
+                document.getElementById('startBtn').addEventListener('click', () => this.startTimer());
+                document.getElementById('pauseBtn').addEventListener('click', () => this.pauseTimer());
+                document.getElementById('resetBtn').addEventListener('click', () => this.resetTimer());
+                document.getElementById('skipBtn').addEventListener('click', () => this.skipSession());
+
+                // Settings inputs
+                document.getElementById('workDuration').addEventListener('change', () => this.updateSettings());
+                document.getElementById('shortBreakDuration').addEventListener('change', () => this.updateSettings());
+                document.getElementById('longBreakDuration').addEventListener('change', () => this.updateSettings());
+            }
+
+            updateSettings() {
+                this.workDuration = parseInt(document.getElementById('workDuration').value);
+                this.shortBreakDuration = parseInt(document.getElementById('shortBreakDuration').value);
+                this.longBreakDuration = parseInt(document.getElementById('longBreakDuration').value);
+                
+                if (!this.isRunning) {
+                    this.resetTimer();
+                }
+            }
+
+            startTimer() {
+                if (!this.isRunning) {
+                    this.isRunning = true;
+                    this.timer = setInterval(() => this.tick(), 1000);
+                    
+                    document.getElementById('startBtn').disabled = true;
+                    document.getElementById('pauseBtn').disabled = false;
+                }
+            }
+
+            pauseTimer() {
+                if (this.isRunning) {
+                    this.isRunning = false;
+                    clearInterval(this.timer);
+                    
+                    document.getElementById('startBtn').disabled = false;
+                    document.getElementById('pauseBtn').disabled = true;
+                }
+            }
+
+            resetTimer() {
+                this.pauseTimer();
+                
+                switch (this.currentSession) {
+                    case 'work':
+                        this.timeLeft = this.workDuration * 60;
+                        this.totalTime = this.workDuration * 60;
+                        break;
+                    case 'shortBreak':
+                        this.timeLeft = this.shortBreakDuration * 60;
+                        this.totalTime = this.shortBreakDuration * 60;
+                        break;
+                    case 'longBreak':
+                        this.timeLeft = this.longBreakDuration * 60;
+                        this.totalTime = this.longBreakDuration * 60;
+                        break;
+                }
+                
+                this.updateDisplay();
+                this.updateProgress();
+            }
+
+            skipSession() {
+                this.pauseTimer();
+                this.switchSession();
+            }
+
+            tick() {
+                this.timeLeft--;
+                this.updateDisplay();
+                this.updateProgress();
+                
+                if (this.timeLeft <= 0) {
+                    this.sessionComplete();
+                }
+            }
+
+            sessionComplete() {
+                this.pauseTimer();
+                
+                if (this.currentSession === 'work') {
+                    this.completedSessions++;
+                    this.totalFocusTime += this.workDuration;
+                    this.currentStreak++;
+                    this.showNotification('Work session complete! Time for a break.');
+                } else {
+                    this.showNotification('Break complete! Ready to focus?');
+                }
+                
+                this.switchSession();
+                this.updateStats();
+            }
+
+            switchSession() {
+                if (this.currentSession === 'work') {
+                    this.sessionCount++;
+                    // Every 4th session is a long break
+                    this.currentSession = (this.sessionCount % 4 === 0) ? 'longBreak' : 'shortBreak';
+                } else {
+                    this.currentSession = 'work';
+                }
+                
+                this.updateSessionDisplay();
+                this.resetTimer();
+            }
+
+            updateDisplay() {
+                const minutes = Math.floor(this.timeLeft / 60);
+                const seconds = this.timeLeft % 60;
+                const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                document.getElementById('timerDisplay').textContent = display;
+                document.title = `${display} - Chronos`;
+            }
+
+            updateProgress() {
+                const progress = 1 - (this.timeLeft / this.totalTime);
+                const circumference = 2 * Math.PI * 90; // radius = 90
+                const offset = circumference * (1 - progress);
+                
+                document.getElementById('progressCircle').style.strokeDashoffset = offset;
+            }
+
+            updateSessionDisplay() {
+                const sessionTypes = {
+                    'work': 'Work Session',
+                    'shortBreak': 'Short Break',
+                    'longBreak': 'Long Break'
+                };
+                
+                document.getElementById('sessionType').textContent = sessionTypes[this.currentSession];
+            }
+
+            updateStats() {
+                document.getElementById('completedSessions').textContent = this.completedSessions;
+                
+                const hours = Math.floor(this.totalFocusTime / 60);
+                const minutes = this.totalFocusTime % 60;
+                document.getElementById('totalFocusTime').textContent = `${hours}h ${minutes}m`;
+                
+                document.getElementById('currentStreak').textContent = this.currentStreak;
+            }
+
+            showNotification(message) {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+                
+                // Browser notification if supported
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification('Chronos', { body: message });
+                }
+            }
+        }
+
+        // Request notification permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
+        const pomodoroTimer = new PomodoroTimer();
+    </script>
+</body>
+</html>
